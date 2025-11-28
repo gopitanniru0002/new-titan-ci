@@ -1,0 +1,49 @@
+name: Build and Push Docker Image to ECR
+
+on:
+  push:
+    branches:
+      - master  # Will trigger on the default branch (usually master)
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout source code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Configure AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}  # Make AWS region configurable in secrets
+
+      # Step 3: Login to Amazon ECR
+      - name: Login to AWS ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Step 4: Set Docker repository and image tag variables
+      - name: Set Docker environment variables
+        run: |
+          echo "ECR_REGISTRY=${{ secrets.AWS_ECR_REGISTRY }}" >> $GITHUB_ENV  # ECR registry stored in secrets
+          echo "ECR_REPOSITORY=${{ secrets.AWS_ECR_REPOSITORY }}" >> $GITHUB_ENV  # Repository name from secrets
+          echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV  # Use commit SHA as image tag for versioning
+
+      # Step 5: Build Docker image
+      - name: Build Docker Image
+        run: |
+          docker build -t titan .  # Building the docker image with 'titan' tag locally
+
+      # Step 6: Tag Docker image for ECR
+      - name: Tag Docker Image
+        run: |
+          docker tag titan:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  # Tagging the image for ECR
+
+      # Step 7: Push Docker image to ECR
+      - name: Push Docker Image to ECR
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  # Pushing the tagged image to ECR
