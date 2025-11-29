@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: titan-deployment
+  labels:
+    app: titan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: titan
+  template:
+    metadata:
+      labels:
+        app: titan
+    spec:
+      containers:
+      - name: titan-container
+        image: 917374863672.dkr.ecr.us-east-1.amazonaws.com/titan:f90f99d6da6a9961251463b910266d10ec3ea341
+        ports:
+        - containerPort: 80

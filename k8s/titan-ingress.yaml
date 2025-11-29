@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: titan-ingress
+  namespace: default
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing        # Load Balancer will be public
+    alb.ingress.kubernetes.io/target-type: ip                 # Route traffic directly to pod IPs
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'   # Only listen on HTTP (80)
+    alb.ingress.kubernetes.io/healthcheck-path: /             # Path for health checks
+    # alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:369668972483:certificate/36391ca1-b153-4331-aec3-b2faf33dc4d9  # SSL certificate for HTTPS (can be added later)
+spec:
+  ingressClassName: alb                                           # Use AWS ALB Ingress Controller
+  rules:
+    - # host: cafe.gopinaidu2451.online                           # Uncomment and replace with your domain name when you have it
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: titan-service
+                port:
+                  number: 80
+

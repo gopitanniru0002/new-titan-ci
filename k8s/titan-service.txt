@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: titan-clusterip
+spec:
+  type: ClusterIP       # <-- Explicitly add this
+  selector:
+    app: titan
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+#kubectl run -i --tty --rm debug --image=curlimages/curl --restart=Never -- /bin/sh
+
+#curl 10.100.60.32:80
