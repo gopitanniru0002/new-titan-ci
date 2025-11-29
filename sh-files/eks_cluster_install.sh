@@ -12,7 +12,7 @@ NODEGROUP_NAME="new-titan-ci-nodegroup-one"
 NODE_TYPE="t2.small"
 NODES=1
 NODES_MIN=1
-NODES_MAX=2
+NODES_MAX=3
 K8S_VERSION="1.29"
 
 # Step 1: Create EKS Cluster with Managed Node Group
